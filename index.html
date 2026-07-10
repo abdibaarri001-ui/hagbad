@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App-ka Hagbadda rasmiga ah - Live Cloud Version</title>
+    <title>App-ka Hagbadda rasmiga ah - DDS Cloud Version</title>
     
     <style>
         body {
@@ -188,8 +188,6 @@
             font-weight: bold;
         }
 
-        .delete-btn:hover { background-color: #dc2626; }
-
         .member-row {
             background-color: #1c1c1c;
             padding: 10px 12px;
@@ -201,10 +199,16 @@
             font-size: 14px;
         }
 
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
         .member-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .status-badge {
@@ -215,13 +219,14 @@
         }
 
         .status-paid { background-color: #10b981; color: white; }
+        .status-partial { background-color: #ff9f0a; color: black; }
         .status-unpaid { background-color: #ef4444; color: white; }
         
         .pay-now-btn {
             background-color: #10b981;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 12px;
@@ -232,13 +237,30 @@
         .winner-badge { color: #ff9f0a; font-weight: bold; margin-left: 5px; }
 
         .cycle-select {
-            margin-top: 10px;
+            margin-top: 5px;
             padding: 7px;
             background: #444;
             color: white;
             border: none;
             border-radius: 4px;
             width: 100%;
+        }
+
+        .reset-cycle-btn {
+            width: 100%;
+            background-color: #ff9f0a;
+            color: black;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .admin-tag {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -283,7 +305,7 @@
 
         <!-- 2. HAGBADA -->
         <div id="hagbad-app" class="app-content">
-            <h3>Abuur Koox Hagbad ah (Cloud)</h3>
+            <h3>Abuur Koox Hagbad ah (Cloud ETB)</h3>
             
             <div class="form-group">
                 <label>Magaca Kooxda:</label>
@@ -291,8 +313,18 @@
             </div>
 
             <div class="form-group">
-                <label>Lacagta bishii qofka laga rabo ($):</label>
-                <input type="number" id="groupMoney" placeholder="Tusaale: 100">
+                <label>Lacagta bishii qofka laga rabo (ETB):</label>
+                <input type="number" id="groupMoney" placeholder="Tusaale: 5000">
+            </div>
+
+            <div class="form-group">
+                <label>Magaca Masuulka Kooxda (Admin):</label>
+                <input type="text" id="groupAdmin" placeholder="Tusaale: Abdibaarri">
+            </div>
+
+            <div class="form-group">
+                <label>Koodhka Sirta ah ee Masuulka (Admin Password):</label>
+                <input type="password" id="groupPassword" placeholder="Geli koodh aad adiga kaliya taqaan">
             </div>
 
             <div class="form-group">
@@ -308,7 +340,7 @@
             <button class="action-btn" onclick="abuurKoox()">Abuur Kooxda</button>
             
             <div style="margin-top: 25px; border-top: 1px solid #333; padding-top: 20px;">
-                <h4>Kooxaha Firfircoon (Toos u dhex muuqda dhammaan qalabka):</h4>
+                <h4>Kooxaha Firfircoon (Live DDS Cloud):</h4>
                 <div id="kooxahaContainer"></div>
             </div>
         </div>
@@ -316,7 +348,6 @@
     </div>
 
     <script>
-        // HALKAN WAXAAN TOOS UGU JIRA LINK-GAAGA FIREBASE:
         const FIREBASE_URL = "https://hagbad-app-142b9-default-rtdb.firebaseio.com"; 
 
         function beddelApp(appId, element) {
@@ -344,7 +375,10 @@
         }
 
         // CLOUD HAGBADA CODE
-        document.addEventListener("DOMContentLoaded", sooJiidKooxaha);
+        document.addEventListener("DOMContentLoaded", () => {
+            sooJiidKooxaha();
+            setInterval(sooJiidKooxaha, 5000); 
+        });
 
         function furSanduuqyadaMagacyada() {
             let count = parseInt(document.getElementById("groupMembersCount").value);
@@ -367,101 +401,171 @@
         async function abuurKoox() {
             let magaca = document.getElementById("groupName").value.trim();
             let lacag = parseFloat(document.getElementById("groupMoney").value);
+            let admin = document.getElementById("groupAdmin").value.trim();
+            let password = document.getElementById("groupPassword").value.trim();
             let count = parseInt(document.getElementById("groupMembersCount").value);
             let nameInputs = document.querySelectorAll(".member-name-input");
             let xubnahaObjects = [];
 
-            if (magaca === "" || isNaN(lacag) || isNaN(count) || count <= 0) { alert("Fadlan buuxi meelaha bannaan!"); return; }
+            if (magaca === "" || isNaN(lacag) || admin === "" || password === "" || isNaN(count) || count <= 0) { 
+                alert("Fadlan buuxi dhammaan meelaha bannaan oo nidaamsan!"); 
+                return; 
+            }
 
             let gashayDhammaan = true;
             nameInputs.forEach((input, index) => {
                 let mName = input.value.trim();
                 if (mName === "") { gashayDhammaan = false; }
-                xubnahaObjects.push({ id: index, magac: mName, bixiyay: false });
+                xubnahaObjects.push({ id: index, magac: mName, bixiyayLacag: 0 });
             });
 
             if (!gashayDhammaan) { alert("Fadlan buuxi magacyada dhammaan xubnaha!"); return; }
 
             let gId = "group_" + Date.now();
-            let koox = { id: gId, magaca: magaca, lacag: lacag, xubnaha: xubnahaObjects, guud: lacag * count, wareeggaHadda: 0 };
+            let koox = { id: gId, magaca: magaca, lacag: lacag, admin: admin, password: password, xubnaha: xubnahaObjects, guud: lacag * count, wareeggaHadda: 0 };
 
             await fetch(`${FIREBASE_URL}/kooxaha/${gId}.json`, { method: "PUT", body: JSON.stringify(koox) });
 
             document.getElementById("groupName").value = "";
             document.getElementById("groupMoney").value = "";
+            document.getElementById("groupAdmin").value = "";
+            document.getElementById("groupPassword").value = "";
             document.getElementById("groupMembersCount").value = "";
             document.getElementById("dynamicNamesContainer").style.display = "none";
+            
+            alert("Guul! Kooxdaadii cusubayd waa la abuuray.");
             sooJiidKooxaha();
         }
 
         async function sooJiidKooxaha() {
             let container = document.getElementById("kooxahaContainer");
-            let res = await fetch(`${FIREBASE_URL}/kooxaha.json`);
-            let data = await res.json();
-            container.innerHTML = "";
+            try {
+                let res = await fetch(`${FIREBASE_URL}/kooxaha.json`);
+                let data = await res.json();
+                container.innerHTML = "";
 
-            if(!data) { container.innerHTML = "<p style='color:#777; text-align:center;'>Weli ma jirto koox ku jirta Cloud-ka.</p>"; return; }
+                if(!data) { container.innerHTML = "<p style='color:#777; text-align:center;'>Weli ma jirto koox ku jirta Cloud-ka.</p>"; return; }
 
-            Object.keys(data).forEach(key => {
-                let koox = data[key];
-                let card = document.createElement("div");
-                card.className = "group-card";
-                
-                let xubnahaHTML = "";
-                koox.xubnaha.forEach((xubin, index) => {
-                    let isWinner = (index === koox.wareeggaHadda) ? "<span class='winner-badge'>🎯 Nasiibka</span>" : "";
-                    let statusLabel = xubin.bixiyay ? `<span class="status-badge status-paid">Bixiyay ✅</span>` : `<span class="status-badge status-unpaid">Ma Bixin ❌</span>`;
-                    let payButton = !xubin.bixiyay 
-                        ? `<button class="pay-now-btn" onclick="bixiLacagtaQof('${koox.id}', ${xubin.id}, '${xubin.magac}', ${koox.lacag})">Bixi $${koox.lacag}</button>`
-                        : `<button class="pay-now-btn" style="background-color:#444;" disabled>OK</button>`;
+                Object.keys(data).forEach(key => {
+                    let koox = data[key];
+                    let card = document.createElement("div");
+                    card.className = "group-card";
+                    
+                    let xubnahaHTML = "";
+                    koox.xubnaha.forEach((xubin, index) => {
+                        let isWinner = (index === koox.wareeggaHadda) ? "<span class='winner-badge'>🎯 Nasiibku waa</span>" : "";
+                        let bixiyayHadda = xubin.bixiyayLacag || 0;
+                        let dhiman = koox.lacag - bixiyayHadda;
+                        
+                        let statusLabel = "";
+                        if (bixiyayHadda >= koox.lacag) {
+                            statusLabel = `<span class="status-badge status-paid">Bixiyay ✅</span>`;
+                        } else if (bixiyayHadda > 0) {
+                            statusLabel = `<span class="status-badge status-partial">Qayb (${bixiyayHadda} ETB) ⏳</span>`;
+                        } else {
+                            statusLabel = `<span class="status-badge status-unpaid">Ma Bixin ❌</span>`;
+                        }
 
-                    xubnahaHTML += `
-                        <div class="member-row">
-                            <div><b>${index + 1}.</b> ${xubin.magac} ${isWinner}</div>
-                            <div class="member-actions">${statusLabel} ${payButton}</div>
+                        let payButton = (bixiyayHadda < koox.lacag)
+                            ? `<button class="pay-now-btn" onclick="bixiLacagtaQof('${koox.id}', ${xubin.id}, '${xubin.magac}', ${koox.lacag}, ${bixiyayHadda})">Bixi</button>`
+                            : `<button class="pay-now-btn" style="background-color:#444;" disabled>OK</button>`;
+
+                        xubnahaHTML += `
+                            <div class="member-row">
+                                <div class="member-info">
+                                    <div><b>${index + 1}.</b> ${xubin.magac} ${isWinner}</div>
+                                    <div style="font-size:11px; color:#aaa;">U dhiman: ${dhiman} ETB</div>
+                                </div>
+                                <div class="member-actions">${statusLabel} ${payButton}</div>
+                            </div>
+                        `;
+                    });
+
+                    let optionsHTML = "";
+                    koox.xubnaha.forEach((xubin, index) => { optionsHTML += `<option value="${index}" ${index === koox.wareeggaHadda ? 'selected' : ''}>${xubin.magac}</option>`; });
+
+                    card.innerHTML = `
+                        <div class="group-header">
+                            <div>
+                                <h5>${koox.magaca}</h5>
+                                <div class="admin-tag">Masuul: <b>${koox.admin}</b></div>
+                            </div>
+                            <button class="delete-btn" onclick="tirtirKoox('${koox.id}', '${koox.password}')">Tirtir 🗑️</button>
                         </div>
+                        <p>💰 Bishii: <b>${koox.lacag} ETB</b> | 🏦 Guud: <b>${koox.guud} ETB</b></p>
+                        <div style="margin: 10px 0;">
+                            <label style="font-size:13px; color:#aaa;">Qofka wareegga leh (Masuulka kaliya):</label>
+                            <select class="cycle-select" onchange="beddelWareeg('${koox.id}', this.value, '${koox.password}')">${optionsHTML}</select>
+                        </div>
+                        <div style="margin-top: 10px;"><b style="font-size: 13px; color: #ff9f0a;">Xaaladda Xubnaha:</b>${xubnahaHTML}</div>
+                        <button class="reset-cycle-btn" onclick="xirWareeggaCusub('${koox.id}', ${koox.wareeggaHadda}, ${koox.xubnaha.length}, '${koox.password}')">🔄 Xir Wareegga & U wareeji Nasiibka</button>
                     `;
+                    container.appendChild(card);
                 });
-
-                let optionsHTML = "";
-                koox.xubnaha.forEach((xubin, index) => { optionsHTML += `<option value="${index}" ${index === koox.wareeggaHadda ? 'selected' : ''}>${xubin.magac}</option>`; });
-
-                card.innerHTML = `
-                    <div class="group-header"><h5>${koox.magaca}</h5><button class="delete-btn" onclick="tirtirKoox('${koox.id}')">Tirtir 🗑️</button></div>
-                    <p>💰 Bishii: <b>$${koox.lacag}</b> | 🏦 Guud: <b>$${koox.guud}</b></p>
-                    <div style="margin: 10px 0;">
-                        <label style="font-size:13px; color:#aaa;">Qofka wareegga leh:</label>
-                        <select class="cycle-select" onchange="beddelWareeg('${koox.id}', this.value)">${optionsHTML}</select>
-                    </div>
-                    <div style="margin-top: 10px;"><b style="font-size: 13px; color: #ff9f0a;">Xaaladda Xubnaha:</b>${xubnahaHTML}</div>
-                `;
-                container.appendChild(card);
-            });
+            } catch (err) {
+                console.log("Cilad dhanka soo jiidashada xogta ah:", err);
+            }
         }
 
-        async function bixiLacagtaQof(groupId, memberId, magaca, lacag) {
-            let nambar = prompt(`Qofka: ${magaca}\nLacagta: $${lacag}\n\nGeli Nambarkaaga:`);
+        async function bixiLacagtaQof(groupId, memberId, magaca, jartaGuud, bixiyayHadda) {
+            let shirkad = prompt("Dooro Shirkadda DDS ee aad lacagta ku soo dirtay:\n1. HelloCash\n2. Sahay (CBE Birr)\n3. E-Birr\n\nGeli magaca shirkadda:");
+            if (!shirkad) return;
+
+            let dhiman = jartaGuud - bixiyayHadda;
+            let lacagGeli = prompt(`Qofka: ${magaca}\nGuud ahaan laga rabay: ${jartaGuud} ETB\nHadda waxaa u dhiman: ${dhiman} ETB\n\nGeli lacagta aad hadda bixinayso (ETB):`);
+            if (!lacagGeli || isNaN(parseFloat(lacagGeli)) || parseFloat(lacagGeli) <= 0) { alert("Lacag khaldan ayaad gelisay!"); return; }
+            
+            let lacagCusub = parseFloat(lacagGeli);
+            if (lacagCusub > dhiman) { alert(`Lacagtu ma ka badnaan karto inta u dhiman oo ah ${dhiman} ETB!`); return; }
+
+            let nambar = prompt("Geli Nambarkaaga mobilka:");
             if (!nambar) return;
-            let pin = prompt("Geli PIN-kaaga:");
+            let pin = prompt("Geli PIN-kaaga si loo xaqiijiyo:");
             if (!pin) return;
 
-            let res = await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}.json`);
-            let xubin = await res.json();
-            xubin.bixiyay = true;
+            let wadajir = bixiyayHadda + lacagCusub;
 
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}.json`, { method: "PUT", body: JSON.stringify(xubin) });
-            alert(`Guul! $${lacag} waa la bixiyay.`);
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/bixiyayLacag.json`, { method: "PUT", body: wadajir });
+            alert(`Guul! ${lacagCusub} ETB waxaa lagu bixiyay nidaamka ${shirkad}.`);
             sooJiidKooxaha();
         }
 
-        async function beddelWareeg(groupId, winnerIndex) {
+        async function beddelWareeg(groupId, winnerIndex, sirtiiKooxda) {
+            let kalasooGeli = prompt("Geli koodhka sirta ah ee Masuulka si aad u beddesho qofka Nasiibka leh:");
+            if (kalasooGeli !== sirtiiKooxda) { alert("Koodhka sirta ah waa khaldan yahay! Isbeddel lama samayn karo."); sooJiidKooxaha(); return; }
+
             await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/wareeggaHadda.json`, { method: "PUT", body: winnerIndex });
+            alert("Qofka nasiibka leh waa la beddelay.");
             sooJiidKooxaha();
         }
 
-        async function tirtirKoox(groupId) {
-            if (confirm("Ma hubaal baa?")) {
+        async function xirWareeggaCusub(groupId, wareeggaHadda, tiradaXubnaha, sirtiiKooxda) {
+            let kalasooGeli = prompt("KALIYA MASUULKA:\nGeli koodhka sirta ah ee kooxda si aad u xirto wareegga bishan:");
+            if (kalasooGeli !== sirtiiKooxda) { alert("Koodhka sirta ah waa khaldan yahay!"); return; }
+
+            let xigaIndex = (wareeggaHadda + 1) % tiradaXubnaha;
+
+            let res = await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha.json`);
+            let xubnaha = await res.json();
+            
+            xubnaha.forEach(xubin => {
+                xubin.bixiyayLacag = 0;
+            });
+
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha.json`, { method: "PUT", body: JSON.stringify(xubnaha) });
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/wareeggaHadda.json`, { method: "PUT", body: xigaIndex });
+
+            alert("Wareeggii wuu dhammaaday! Lacagihii xubnaha waa la eberyeey (0 ETB), nasiibkiina wuxuu u wareegay qofka xiga.");
+            sooJiidKooxaha();
+        }
+
+        async function tirtirKoox(groupId, sirtiiKooxda) {
+            let kalasooGeli = prompt("KALIYA MASUULKA:\nGeli koodhka sirta ah si aad u tirtirto kooxdan:");
+            if (kalasooGeli !== sirtiiKooxda) { alert("Koodhka sirta ah waa khaldan yahay! Kooxda lama tirtiri karo."); return; }
+
+            if (confirm("Ma hubaal baa inaad tirtirto kooxdan dhan rasmiga u ah?")) {
                 await fetch(`${FIREBASE_URL}/kooxaha/${groupId}.json`, { method: "DELETE" });
+                alert("Kooxdii waa la tirtiray.");
                 sooJiidKooxaha();
             }
         }
