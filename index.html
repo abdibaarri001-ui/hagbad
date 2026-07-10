@@ -377,7 +377,7 @@
         // CLOUD HAGBADA CODE
         document.addEventListener("DOMContentLoaded", () => {
             sooJiidKooxaha();
-            setInterval(sooJiidKooxaha, 5000); 
+            setInterval(sooJiidKooxaha, 3000); 
         });
 
         function furSanduuqyadaMagacyada() {
@@ -442,66 +442,77 @@
             try {
                 let res = await fetch(`${FIREBASE_URL}/kooxaha.json`);
                 let data = await res.json();
-                container.innerHTML = "";
+                
+                if(!data || Object.keys(data).length === 0) { 
+                    container.innerHTML = "<p style='color:#777; text-align:center;'>Weli ma jirto koox ku jirta Cloud-ka.</p>"; 
+                    return; 
+                }
 
-                if(!data) { container.innerHTML = "<p style='color:#777; text-align:center;'>Weli ma jirto koox ku jirta Cloud-ka.</p>"; return; }
-
+                let finalHTML = "";
                 Object.keys(data).forEach(key => {
                     let koox = data[key];
-                    let card = document.createElement("div");
-                    card.className = "group-card";
+                    if(!koox) return;
                     
                     let xubnahaHTML = "";
-                    koox.xubnaha.forEach((xubin, index) => {
-                        let isWinner = (index === koox.wareeggaHadda) ? "<span class='winner-badge'>🎯 Nasiibku waa</span>" : "";
-                        let bixiyayHadda = xubin.bixiyayLacag || 0;
-                        let dhiman = koox.lacag - bixiyayHadda;
-                        
-                        let statusLabel = "";
-                        if (bixiyayHadda >= koox.lacag) {
-                            statusLabel = `<span class="status-badge status-paid">Bixiyay ✅</span>`;
-                        } else if (bixiyayHadda > 0) {
-                            statusLabel = `<span class="status-badge status-partial">Qayb (${bixiyayHadda} ETB) ⏳</span>`;
-                        } else {
-                            statusLabel = `<span class="status-badge status-unpaid">Ma Bixin ❌</span>`;
-                        }
+                    if(koox.xubnaha) {
+                        koox.xubnaha.forEach((xubin, index) => {
+                            let isWinner = (index === parseInt(koox.wareeggaHadda)) ? "<span class='winner-badge'>🎯 Nasiibku waa</span>" : "";
+                            let bixiyayHadda = xubin.bixiyayLacag || 0;
+                            let dhiman = koox.lacag - bixiyayHadda;
+                            
+                            let statusLabel = "";
+                            if (bixiyayHadda >= koox.lacag) {
+                                statusLabel = `<span class="status-badge status-paid">Bixiyay ✅</span>`;
+                            } else if (bixiyayHadda > 0) {
+                                statusLabel = `<span class="status-badge status-partial">Qayb (${bixiyayHadda} ETB) ⏳</span>`;
+                            } else {
+                                statusLabel = `<span class="status-badge status-unpaid">Ma Bixin ❌</span>`;
+                            }
 
-                        let payButton = (bixiyayHadda < koox.lacag)
-                            ? `<button class="pay-now-btn" onclick="bixiLacagtaQof('${koox.id}', ${xubin.id}, '${xubin.magac}', ${koox.lacag}, ${bixiyayHadda})">Bixi</button>`
-                            : `<button class="pay-now-btn" style="background-color:#444;" disabled>OK</button>`;
+                            let payButton = (bixiyayHadda < koox.lacag)
+                                ? `<button class="pay-now-btn" onclick="bixiLacagtaQof('${koox.id}', ${xubin.id}, '${xubin.magac}', ${koox.lacag}, ${bixiyayHadda})">Bixi</button>`
+                                : `<button class="pay-now-btn" style="background-color:#444;" disabled>OK</button>`;
 
-                        xubnahaHTML += `
-                            <div class="member-row">
-                                <div class="member-info">
-                                    <div><b>${index + 1}.</b> ${xubin.magac} ${isWinner}</div>
-                                    <div style="font-size:11px; color:#aaa;">U dhiman: ${dhiman} ETB</div>
+                            xubnahaHTML += `
+                                <div class="member-row">
+                                    <div class="member-info">
+                                        <div><b>${index + 1}.</b> ${xubin.magac} ${isWinner}</div>
+                                        <div style="font-size:11px; color:#aaa;">U dhiman: ${dhiman} ETB</div>
+                                    </div>
+                                    <div class="member-actions">${statusLabel} ${payButton}</div>
                                 </div>
-                                <div class="member-actions">${statusLabel} ${payButton}</div>
-                            </div>
-                        `;
-                    });
+                            `;
+                        });
+                    }
 
                     let optionsHTML = "";
-                    koox.xubnaha.forEach((xubin, index) => { optionsHTML += `<option value="${index}" ${index === koox.wareeggaHadda ? 'selected' : ''}>${xubin.magac}</option>`; });
+                    if(koox.xubnaha) {
+                        koox.xubnaha.forEach((xubin, index) => { 
+                            optionsHTML += `<option value="${index}" ${index === parseInt(koox.wareeggaHadda) ? 'selected' : ''}>${xubin.magac}</option>`; 
+                        });
+                    }
 
-                    card.innerHTML = `
-                        <div class="group-header">
-                            <div>
-                                <h5>${koox.magaca}</h5>
-                                <div class="admin-tag">Masuul: <b>${koox.admin}</b></div>
+                    finalHTML += `
+                        <div class="group-card">
+                            <div class="group-header">
+                                <div>
+                                    <h5>${koox.magaca}</h5>
+                                    <div class="admin-tag">Masuul: <b>${koox.admin}</b></div>
+                                </div>
+                                <button class="delete-btn" onclick="tirtirKoox('${koox.id}', '${koox.password}')">Tirtir 🗑️</button>
                             </div>
-                            <button class="delete-btn" onclick="tirtirKoox('${koox.id}', '${koox.password}')">Tirtir 🗑️</button>
+                            <p>💰 Bishii: <b>${koox.lacag} ETB</b> | 🏦 Guud: <b>${koox.guud} ETB</b></p>
+                            <div style="margin: 10px 0;">
+                                <label style="font-size:13px; color:#aaa;">Qofka wareegga leh (Masuulka kaliya):</label>
+                                <select class="cycle-select" onchange="beddelWareeg('${koox.id}', this.value, '${koox.password}')">${optionsHTML}</select>
+                            </div>
+                            <div style="margin-top: 10px;"><b style="font-size: 13px; color: #ff9f0a;">Xaaladda Xubnaha:</b>${xubnahaHTML}</div>
+                            <button class="reset-cycle-btn" onclick="xirWareeggaCusub('${koox.id}', ${koox.wareeggaHadda}, ${koox.xubnaha ? koox.xubnaha.length : 0}, '${koox.password}')">🔄 Xir Wareegga & U wareeji Nasiibka</button>
                         </div>
-                        <p>💰 Bishii: <b>${koox.lacag} ETB</b> | 🏦 Guud: <b>${koox.guud} ETB</b></p>
-                        <div style="margin: 10px 0;">
-                            <label style="font-size:13px; color:#aaa;">Qofka wareegga leh (Masuulka kaliya):</label>
-                            <select class="cycle-select" onchange="beddelWareeg('${koox.id}', this.value, '${koox.password}')">${optionsHTML}</select>
-                        </div>
-                        <div style="margin-top: 10px;"><b style="font-size: 13px; color: #ff9f0a;">Xaaladda Xubnaha:</b>${xubnahaHTML}</div>
-                        <button class="reset-cycle-btn" onclick="xirWareeggaCusub('${koox.id}', ${koox.wareeggaHadda}, ${koox.xubnaha.length}, '${koox.password}')">🔄 Xir Wareegga & U wareeji Nasiibka</button>
                     `;
-                    container.appendChild(card);
                 });
+                
+                container.innerHTML = finalHTML;
             } catch (err) {
                 console.log("Cilad dhanka soo jiidashada xogta ah:", err);
             }
@@ -543,7 +554,7 @@
             let kalasooGeli = prompt("KALIYA MASUULKA:\nGeli koodhka sirta ah ee kooxda si aad u xirto wareegga bishan:");
             if (kalasooGeli !== sirtiiKooxda) { alert("Koodhka sirta ah waa khaldan yahay!"); return; }
 
-            let xigaIndex = (wareeggaHadda + 1) % tiradaXubnaha;
+            let xigaIndex = (parseInt(wareeggaHadda) + 1) % tiradaXubnaha;
 
             let res = await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha.json`);
             let xubnaha = await res.json();
