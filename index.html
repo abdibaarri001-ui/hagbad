@@ -3,485 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App-ka Hagbadda rasmiga ah - DDS Cloud Ultimate Version</title>
-    
+    <title>Hagbad Cloud Pro & Calculator</title>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #1e90ff;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --text: #ffffff;
+        }
         body {
-            background-color: #121212;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
             margin: 0;
             padding: 20px;
-            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        .tab-container {
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
+            width: 100%;
         }
-
         .tab-btn {
-            background-color: #2d2d2d;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 14px;
+            flex: 1;
+            padding: 12px;
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            color: var(--text);
             font-weight: bold;
-            border-radius: 8px;
             cursor: pointer;
+            border-radius: 6px;
             transition: 0.3s;
         }
-
         .tab-btn.active {
-            background-color: #1e90ff;
+            background: var(--primary);
+            border-color: var(--primary);
         }
-
-        .app-box {
-            background-color: #1c1c1c;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 650px;
-            box-sizing: border-box;
-        }
-
         .app-content {
             display: none;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
         }
-
         .app-content.active {
             display: block;
         }
-
-        /* CALCULATOR STYLE */
-        #display {
+        /* Calculator Style */
+        .calc-display {
             width: 100%;
-            height: 70px;
-            background-color: #2d2d2d;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 32px;
+            height: 50px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            font-size: 24px;
             text-align: right;
-            padding: 10px;
+            padding: 5px 10px;
             box-sizing: border-box;
-            margin-bottom: 20px;
+            border-radius: 6px;
+            margin-bottom: 15px;
         }
-
-        .calc-buttons {
+        .calc-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
-
-        button.calc {
-            height: 60px;
-            border-radius: 10px;
+        .calc-btn {
+            padding: 15px;
+            font-size: 18px;
+            background: #334155;
             border: none;
-            font-size: 20px;
-            font-weight: bold;
+            color: #fff;
+            border-radius: 6px;
             cursor: pointer;
         }
-
-        .num { background-color: #404040; color: white; }
-        .op { background-color: #ff9f0a; color: white; }
-        .fn { background-color: #a5a5a5; color: black; }
-
-        /* GENERAL HAGBAD STYLES */
-        h3, h4, h5 {
-            color: #1e90ff;
-            text-align: center;
-            margin-top: 0;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            color: #aaa;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
+        .calc-btn.op { background: var(--warning); color: #000; font-weight: bold; }
+        .calc-btn.eq { background: var(--success); grid-column: span 2; }
+        .calc-btn.clear { background: var(--danger); }
+        /* Form & Cards Style */
+        input, select, button {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background-color: #2d2d2d;
-            color: white;
-            font-size: 15px;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
             box-sizing: border-box;
         }
-
-        .dynamic-names-box {
-            background-color: #252525;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            max-height: 250px;
-            overflow-y: auto;
-            border: 1px dashed #555;
-        }
-
-        .dynamic-input-row {
-            margin-bottom: 12px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
-        }
-
-        .dynamic-input-row label {
-            font-size: 12px;
-            color: #ff9f0a;
-        }
-
-        .action-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #1e90ff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
+        button.action-btn {
+            background: var(--primary);
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            border: none;
         }
-
         .group-card {
-            background-color: #2d2d2d;
+            background: #1e293b;
             padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 5px solid #ff9f0a;
-            color: white;
-        }
-
-        .group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .delete-btn {
-            background-color: #ef4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .member-row {
-            background-color: #1c1c1c;
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-paid { background-color: #10b981; color: white; }
-        .status-pending { background-color: #ff9f0a; color: black; }
-        .status-unpaid { background-color: #ef4444; color: white; }
-        
-        .pay-now-btn {
-            background-color: #1e90ff;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .winner-badge { color: #ff9f0a; font-weight: bold; margin-left: 5px; }
-
-        .cycle-select {
-            margin-top: 5px;
-            padding: 7px;
-            background: #444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            width: 100%;
-        }
-
-        .reset-cycle-btn {
-            width: 100%;
-            background-color: #eab308;
-            color: black;
-            border: none;
-            padding: 10px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 8px;
             margin-top: 15px;
+            border: 1px solid #334155;
         }
-
-        /* FINANCE DASHBOARD */
-        .finance-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .finance-card {
-            background-color: #222;
+        .member-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
             padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            border-top: 3px solid #10b981;
-        }
-
-        .finance-card.debt {
-            border-top: 3px solid #ef4444;
-        }
-
-        .finance-card div { font-size: 12px; color: #aaa; }
-        .finance-card b { font-size: 16px; color: white; }
-
-        /* NOTIFICATION & LOGS */
-        .notice-banner {
-            background-color: #7f1d1d;
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .history-box {
-            background-color: #181818;
-            padding: 10px;
+            margin: 5px 0;
             border-radius: 6px;
-            max-height: 150px;
+            border-left: 4px solid var(--primary);
+        }
+        .history-box {
+            background: #0f172a;
+            padding: 8px;
+            border-radius: 4px;
+            max-height: 120px;
             overflow-y: auto;
             font-size: 12px;
-            color: #ccc;
-            margin-top: 10px;
-            border: 1px solid #333;
+            margin-top: 5px;
         }
-
-        .history-item {
-            padding: 5px 0;
-            border-bottom: 1px solid #222;
-        }
-
-        /* ADMIN BLOCK */
-        .admin-section {
-            background-color: #1e293b;
-            border: 1px solid #3b82f6;
+        .admin-section-box {
+            background: #0f172a;
             padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #334155;
+        }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #000;
         }
     </style>
 </head>
 <body>
 
-    <div class="tab-container">
-        <button class="tab-btn active" onclick="beddelApp('calculator-app', this)">Mashiinka Xisaabta</button>
-        <button class="tab-btn" onclick="beddelApp('hagbad-app', this)">Kooxaha Hagbadda</button>
-        <button class="tab-btn" onclick="beddelApp('complaint-app', this)">Codsiyada & Cabashada</button>
-        <button class="tab-btn" onclick="beddelApp('admin-dashboard-app', this)" style="background-color: #14532d;">Qaybta Maamulka (Dashboard)</button>
-    </div>
-
-    <div class="app-box">
-        
-        <!-- 1. CALCULATOR -->
-        <div id="calculator-app" class="app-content active">
-            <input type="text" id="display" readonly value="0">
-            <div class="calc-buttons">
-                <button class="calc fn" onclick="tirtirDhammaan()">C</button>
-                <button class="calc fn" onclick="tirtirHalNambar()">⌫</button>
-                <button class="calc fn" onclick="kuDarCalaamad('%')">%</button>
-                <button class="calc op" onclick="kuDarCalaamad('/')">/</button>
-                
-                <button class="calc num" onclick="kuDarNambar('7')">7</button>
-                <button class="calc num" onclick="kuDarNambar('8')">8</button>
-                <button class="calc num" onclick="kuDarNambar('9')">9</button>
-                <button class="calc op" onclick="kuDarCalaamad('*')">x</button>
-                
-                <button class="calc num" onclick="kuDarNambar('4')">4</button>
-                <button class="calc num" onclick="kuDarNambar('5')">5</button>
-                <button class="calc num" onclick="kuDarNambar('6')">6</button>
-                <button class="calc op" onclick="kuDarCalaamad('-')">-</button>
-                
-                <button class="calc num" onclick="kuDarNambar('1')">1</button>
-                <button class="calc num" onclick="kuDarNambar('2')">2</button>
-                <button class="calc num" onclick="kuDarNambar('3')">3</button>
-                <button class="calc op" onclick="kuDarCalaamad('+')">+</button>
-                
-                <button class="calc num" onclick="kuDarNambar('0')" style="grid-column: span 2; width: 100%;">0</button>
-                <button class="calc num" onclick="kuDarNambar('.')">.</button>
-                <button class="calc op" onclick="xisaabi()">=</button>
-            </div>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="beddelApp('hagbad-app', this)">📦 Hagbad Cloud</button>
+            <button class="tab-btn" onclick="beddelApp('calc-app', this)">🧮 Xisaabiye</button>
+            <button class="tab-btn" onclick="beddelApp('admin-app', this)">🔑 Admin Dashboard</button>
         </div>
 
-        <!-- 2. HAGBADA -->
-        <div id="hagbad-app" class="app-content">
-            <div class="notice-banner">🔔 OGEZHIIS: Fadlan ku bixi lacagta hagbadda bishan ka hor 25-ka bisha si aan dib u dhac u iman!</div>
+        <!-- ================= HAGBAD APP ================= -->
+        <div id="hagbad-app" class="app-content active">
+            <h2 style="text-align: center; margin-top:0; color: var(--primary);">Hagbad Cloud Pro</h2>
             
-            <h3>Abuur Koox Hagbad ah (DDS Cloud Pro)</h3>
-            
-            <div class="form-group">
-                <label>Aqoonsiga Kooxda (Group ID):</label>
-                <input type="text" id="groupIdInput" placeholder="Tusaale: KOOX-01">
-            </div>
-
-            <div class="form-group">
-                <label>Magaca Kooxda:</label>
-                <input type="text" id="groupName" placeholder="Tusaale: Kooxda Caalamiga">
-            </div>
-
-            <div class="form-group">
-                <label>Lacagta bishii qofka laga rabo (ETB):</label>
-                <input type="number" id="groupMoney" placeholder="Tusaale: 5000">
-            </div>
-
-            <div class="form-group">
-                <label>Akoonka Tooska ah ee Lacagta lagu dirayo (CBE Birr / E-Birr):</label>
-                <input type="text" id="groupAccount" placeholder="Tusaale: CBE Birr: 0912345678">
-            </div>
-
-            <div class="form-group">
-                <label>Magaca Masuulka Kooxda (Admin):</label>
-                <input type="text" id="groupAdmin" placeholder="Tusaale: Maxamed">
-            </div>
-
-            <div class="form-group">
-                <label>PIN-ka Sirta ah ee Admin-ka Kooxda (Admin PIN):</label>
-                <input type="password" id="groupPassword" placeholder="Geli PIN 4-god ah oo maamulaha kooxdu leeyahay">
-            </div>
-
-            <div class="form-group">
-                <label>Tirada Xubnaha Kooxda:</label>
-                <input type="number" id="groupMembersCount" placeholder="Geli tirada, tusaale: 5" oninput="furSanduuqyadaMagacyada()">
+            <div style="display: flex; gap: 10px;">
+                <button onclick="codsoKuBiiris()" style="background: var(--success); border: none; font-weight: bold;">➕ Codso Ku Biiris</button>
+                <button onclick="furSanduuqCodsiGuud()" style="background: var(--warning); color: black; border: none; font-weight: bold;">⚠️ Dir Cabasho / Beddel PIN</button>
             </div>
             
-            <div id="dynamicNamesContainer" class="dynamic-names-box" style="display: none;">
-                <p style="color: #aaa; font-size: 13px; margin-top:0;">Geli Magacyada iyo PIN-nada gaarka u ah xubin walba:</p>
+            <hr style="border-color: #334155; margin: 20px 0;">
+            
+            <h3>Abuur Koox Cusub</h3>
+            <input type="text" id="groupIdInput" placeholder="ID-ga Kooxda (Tusaale: kooxda_daacad)">
+            <input type="text" id="groupName" placeholder="Magaca Kooxda">
+            <input type="number" id="groupMoney" placeholder="Lacagta bishii qofkiiba (ETB)">
+            <input type="text" id="groupAccount" placeholder="Nambarka Akoonka (CBE/E-Birr)">
+            <input type="text" id="groupAdmin" placeholder="Magaca Gudoomiyaha">
+            <input type="password" id="groupPassword" placeholder="PIN-ka Sirta ah ee Kooxda (Admin PIN)">
+            <input type="number" id="groupMembersCount" placeholder="Meqo xubnoood bixinaya?" oninput="furSanduuqyadaMagacyada()">
+            
+            <div id="dynamicNamesContainer" style="display:none; background:#0f172a; padding:10px; border-radius:5px; margin:10px 0;">
+                <h4 style="margin:0 0 10px 0; color:var(--warning);">Geli Xogta Xubnaha:</h4>
                 <div id="inputsList"></div>
             </div>
             
             <button class="action-btn" onclick="abuurKoox()">Abuur Kooxda</button>
-            
-            <div style="margin-top: 25px; border-top: 1px solid #333; padding-top: 20px;">
-                <h4>Kooxaha Firfircoon:</h4>
-                <div id="kooxahaContainer"></div>
-            </div>
+
+            <h3 style="margin-top: 30px; color: var(--warning);">Kooxaha Ka Diwangaashan Cloud-ka:</h3>
+            <div id="kooxahaContainer"></div>
         </div>
 
-        <!-- 3. COMPLAINTS & CLAIMS -->
-        <div id="complaint-app" class="app-content">
-            <h3>Gudbi Cabasho ama Soo-jeedin</h3>
-            <div class="form-group">
-                <label>Dooro Kooxdaada:</label>
-                <select id="compGroupSelect" onchange="buuxiXubnahaCabashada(this.value)"><option value="">Soo xaqiijinayaa kooxaha...</option></select>
-            </div>
-            <div class="form-group">
-                <label>Dooro Magacaaga:</label>
-                <select id="compMemberSelect"><option value="">Marka hore dooro kooxda</option></select>
-            </div>
-            <div class="form-group">
-                <label>Geli PIN-kaaga Gaarka ah (Member PIN):</label>
-                <input type="password" id="compMemberPin" placeholder="****">
-            </div>
-            <div class="form-group">
-                <label>Farriintaada Cabashada:</label>
-                <textarea id="compMessage" rows="4" placeholder="Halkaan ku qor cabashadaada..."></textarea>
-            </div>
-            <button class="action-btn" style="background-color: #ff9f0a; color: black;" onclick="gudbiCabasho()">Gudbi Cabashada</button>
-        </div>
-
-        <!-- 4. MIXED ADMIN DASHBOARD (GROUP ADMIN + SUPER ADMIN) -->
-        <div id="admin-dashboard-app" class="app-content">
-            <h3>Nidaamka Maamulka & Ansixinta</h3>
-            
-            <div class="form-group" id="adminAuthBox">
-                <label>Dooro Kooxdaada (Haddii aad tahay Group Admin):</label>
-                <select id="loginGroupSelect"><option value="">Soo rarayaa kooxaha...</option></select>
-                <p style="color:#aaa; font-size:12px; margin: 5px 0;">Ogow: Haddii aad tahay Maamulaha Guud (Master), koox doorasho uma baahnid ee PIN-ka kaliya qor.</p>
+        <!-- ================= CALCULATOR APP ================= -->
+        <div id="calc-app" class="app-content">
+            <h2 style="text-align: center; margin-top:0;">Mashiinka Xisaabta</h2>
+            <input type="text" id="display" class="calc-display" value="0" readonly>
+            <div class="calc-grid">
+                <button class="calc-btn clear" onclick="tirtirDhammaan()">C</button>
+                <button class="calc-btn" onclick="tirtirHalNambar()">⌫</button>
+                <button class="calc-btn op" onclick="kuDarCalaamad('%')">%</button>
+                <button class="calc-btn op" onclick="kuDarCalaamad('/')">÷</button>
                 
-                <br>
-                <label>Geli PIN-kaaga Maamulnimo (Group Admin PIN ama Master PIN):</label>
-                <input type="password" id="adminPinInput" placeholder="****">
-                <button class="action-btn" style="background-color: #14532d;" onclick="xaqiijiMaamulka()">Giri Dashboard-ka</button>
+                <button class="calc-btn" onclick="kuDarNambar('7')">7</button>
+                <button class="calc-btn" onclick="kuDarNambar('8')">8</button>
+                <button class="calc-btn" onclick="kuDarNambar('9')">9</button>
+                <button class="calc-btn op" onclick="kuDarCalaamad('*')">×</button>
+                
+                <button class="calc-btn" onclick="kuDarNambar('4')">4</button>
+                <button class="calc-btn" onclick="kuDarNambar('5')">5</button>
+                <button class="calc-btn" onclick="kuDarNambar('6')">6</button>
+                <button class="calc-btn op" onclick="kuDarCalaamad('-')">-</button>
+                
+                <button class="calc-btn" onclick="kuDarNambar('1')">1</button>
+                <button class="calc-btn" onclick="kuDarNambar('2')">2</button>
+                <button class="calc-btn" onclick="kuDarNambar('3')">3</button>
+                <button class="calc-btn op" onclick="kuDarCalaamad('+')">+</button>
+                
+                <button class="calc-btn" onclick="kuDarNambar('0')">0</button>
+                <button class="calc-btn" onclick="kuDarCalaamad('.')">.</button>
+                <button class="calc-btn eq" onclick="xisaabi()">=</button>
+            </div>
+        </div>
+
+        <!-- ================= ADMIN DASHBOARD ================= -->
+        <div id="admin-app" class="app-content">
+            <h2 style="text-align: center; margin-top:0;" id="adminWelcomeTitle">Admin Authorization</h2>
+            
+            <div id="adminAuthBox">
+                <label>Dooro Kooxda (Haddii aad tahay Gudoomiye Koox):</label>
+                <select id="loginGroupSelect">
+                    <option value="">-- Dooro Kooxdaada --</option>
+                </select>
+                <label>Geli PIN-ka (Master Admin ama Kooxda):</label>
+                <input type="password" id="adminPinInput" placeholder="Geli PIN-ka sirta ah">
+                <button class="action-btn" onclick="xaqiijiMaamulka()">Gali Dashboard-ka</button>
             </div>
 
             <div id="adminDashboardContent" style="display: none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#222; padding:10px; border-radius:8px;">
-                    <span id="adminWelcomeTitle" style="color:#10b981; font-weight:bold; font-size:14px;">Maamule</span>
-                    <button class="delete-btn" style="background:#555;" onclick="kabaxDashboard()">Ka Bax 🚪</button>
+                <button style="background: var(--danger); border:none; font-weight:bold; margin-bottom:15px;" onclick="kabaxDashboard()">← Ka Bax Dashboard-ka</button>
+                
+                <!-- 1. LIISKA KOOXDA ANXISINTA LACAGTA -->
+                <h3 style="color: var(--success); margin-top:0;">📋 Codsiyada Sugaya Ansixinta Lacagta</h3>
+                <div id="pendingPaymentsContainer"></div>
+                
+                <!-- 2. LIISKA CODSIYADA GUUD (PIN, CABASHO, CILAD) -->
+                <div class="admin-section-box" id="generalTicketsSection">
+                    <h3 style="color: var(--warning); margin-top: 0;">⚠️ Tikidhada Cabashooyinka & Beddelka PIN-ka</h3>
+                    <div id="generalTicketsContainer"></div>
                 </div>
 
-                <div class="admin-section">
-                    <h4>Codsiyada Lacag-bixinta ee Sugaya Ansixinta</h4>
-                    <div id="pendingPaymentsContainer"></div>
+                <!-- 3. HAGAAGINTA KOOXAHA -->
+                <div class="admin-section-box">
+                    <h3 style="color: var(--primary); margin-top: 0;">Hagaajinta & Qiima Dhimista Kooxda</h3>
+                    <div id="groupManageSelectorArea">
+                        <label>Dooro kooxda aad wax ka beddelayso:</label>
+                        <select id="manageGroupSelect" onchange="buuxiXogtaHagaajinta(this.value)">
+                            <option value="">-- Dooro Koox --</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <input type="text" id="editGroupName" placeholder="Magaca Kooxda Cusub">
+                        <input type="number" id="editGroupMoney" placeholder="Lacagta bishii / Qiima Dhimis (ETB)">
+                        <input type="text" id="editGroupAccount" placeholder="Akoonka Cusub">
+                        <button style="background: var(--success); font-weight:bold; border:none;" onclick="keydiIsbeddelkaKooxda()">Keydi Isbeddelka 💾</button>
+                        <button style="background: var(--danger); font-weight:bold; border:none; margin-top: 5px;" onclick="tirtirKooxdaRasmigaAh()">Tirtir Kooxdaan Gabi ahaanba 🗑️</button>
+                    </div>
                 </div>
-
-                <!-- Qaybta Master Admin oo kaliya la tusi doono -->
-                <div id="superAdminOnlySection" style="display: none;">
-                    <div class="admin-section" style="background-color: #1e1e24; border-color: #ff9f0a;">
-                        <h4>Sanduuqa Cabashooyinka Xubnaha (Master Only)</h4>
-                        <div id="adminComplaintsContainer"></div>
-                    </div>
-
-                    <div class="admin-section" style="background-color: #1c2e24; border-color: #22c55e;">
-                        <h4>Maamulka PIN-rada / Dib u Dejin (Master Only)</h4>
-                        <p style="font-size:12px; color:#ccc;">Halkaan ka baabi'i PIN-ka xubinta haddii uu ilaawo, si uu mid cusub u samaysto.</p>
-                        <div class="form-group">
-                            <label>Dooro Kooxda:</label>
-                            <select id="resetPinGroupSelect" onchange="buuxiXubnahaReset(this.value)"><option value="">Dooro Koox</option></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Dooro Xubinta:</label>
-                            <select id="resetPinMemberSelect"><option value="">Dooro Xubin</option></select>
-                        </div>
-                        <button class="action-btn" style="background-color:#22c55e;" onclick="baabiiXubinPin()">Baabi'i PIN-ka & Dib u Deji</button>
-                    </div>
+                
+                <!-- 4. MASTER ADMIN ONLY AREA -->
+                <div id="superAdminOnlySection" style="display: none; margin-top:20px; border-top: 2px dashed #334155; padding-top:15px;">
+                    <h3 style='color:var(--primary); margin-top:0;'>Codsiyada Ku Biirista (Master Only)</h3>
+                    <div id="joinRequestsContainer"></div>
                 </div>
             </div>
         </div>
-
     </div>
 
+    <!-- ================= JAVASCRIPT CODE ================= -->
     <script>
         const FIREBASE_URL = "https://hagbad-app-142b9-default-rtdb.firebaseio.com"; 
         const MASTER_PIN = "9869";
         
-        let authedRole = null; // 'master' ama 'group_admin'
-        let authedGroupId = null; // Waxaa buuxsamaya haddii uu yahay group admin
-        let authedGroupPin = null; 
-        
+        let authedRole = null; 
+        let authedGroupId = null; 
         let dhammaanKooxahaXogtooda = {};
 
         function beddelApp(appId, element) {
@@ -489,12 +290,12 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(appId).classList.add('active');
             element.classList.add('active');
-            if(appId === 'admin-dashboard-app' && authedRole !== null) {
+            if(appId === 'admin-app' && authedRole !== null) {
                 loadAdminDashboardData();
             }
         }
 
-        // CALCULATOR CODE
+        // --- CALCULATOR OPERATIONS ---
         var shaashad = document.getElementById("display");
         function kuDarNambar(nambar) { if (shaashad.value === "0") { shaashad.value = nambar; } else { shaashad.value += nambar; } }
         function kuDarCalaamad(calaamad) { shaashad.value += calaamad; }
@@ -511,7 +312,7 @@
             } catch (error) { shaashad.value = "Khalad"; }
         }
 
-        // CLOUD PRO HAGBADA CODE
+        // --- HAGBAD OPERATIONS ---
         document.addEventListener("DOMContentLoaded", () => {
             sooJiidKooxaha();
             setInterval(sooJiidKooxaha, 4000); 
@@ -527,17 +328,11 @@
             container.style.display = "block";
             for (let i = 1; i <= count; i++) {
                 let div = document.createElement("div");
-                div.className = "dynamic-input-row";
+                div.style.style = "margin-bottom: 8px;";
                 div.innerHTML = `
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div>
-                            <label>Xubin ${i}: Magaca </label>
-                            <input type="text" class="member-name-input" placeholder="Tusaale: Maxamed Cali">
-                        </div>
-                        <div>
-                            <label>PIN-ka Gaarka ah (4 God)</label>
-                            <input type="password" class="member-pin-input" maxlength="4" placeholder="Tusaale: 1234">
-                        </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:5px;">
+                        <input type="text" class="member-name-input" placeholder="Magaca Xubin ${i}">
+                        <input type="password" class="member-pin-input" maxlength="4" placeholder="PIN-ka Xubin ${i} (4 God)">
                     </div>
                 `;
                 list.appendChild(div);
@@ -570,7 +365,7 @@
                 xubnahaObjects.push({ id: i, magac: mName, pin: mPin, bixiyayLacag: 0, xaaladda: "unpaid" });
             }
 
-            if (!gashayDhammaan) { alert("Fadlan buuxi magacyada iyo PIN-nada (4-ta god ah) ee dhammaan xubnaha!"); return; }
+            if (!gashayDhammaan) { alert("Fadlan buuxi magacyada iyo PIN-nada xubnaha!"); return; }
 
             let koox = { id: gId, magaca: magaca, lacag: lacag, account: account, admin: admin, password: password, xubnaha: xubnahaObjects, guud: lacag * count, wareeggaHadda: 0, taariikhda: [] };
 
@@ -585,39 +380,76 @@
             document.getElementById("groupMembersCount").value = "";
             document.getElementById("dynamicNamesContainer").style.display = "none";
             
-            alert("Guul! Kooxdaadii cusubayd waa la abuuray.");
+            alert("Guul! Kooxda cusub waa la abuuray.");
             sooJiidKooxaha();
+        }
+
+        // --- NEW FEATURE: SUBMIT GENERAL TICKETS (PIN CHANGE, COMPLAINTS) ---
+        async function furSanduuqCodsiGuud() {
+            let gId = prompt("Geli ID-ga Kooxdaada:");
+            if(!gId) return;
+            let magac = prompt("Geli Magacaaga:");
+            if(!magac) return;
+            
+            let nooca = prompt("Dooro Nooca Codsiga:\n1: Beddelka PIN-ka\n2: Cabasho Koox/Admin\n3: Cilad Farsamo");
+            let noocaText = "";
+            if(nooca === "1") noocaText = "Beddelka PIN-ka";
+            else if(nooca === "2") noocaText = "Cabasho";
+            else if(nooca === "3") noocaText = "Cilad Farsamo";
+            else { alert("Doorasho qaldan!"); return; }
+
+            let fariin = prompt("Geli faahfaahinta codsigaaga ama fariintaada:");
+            if(!fariin) return;
+
+            let ticket = {
+                groupId: gId,
+                magac: magac,
+                nooca: noocaText,
+                fariin: fariin,
+                waqti: new Date().toLocaleString()
+            };
+
+            await fetch(`${FIREBASE_URL}/tikidhada/${Date.now()}.json`, { method: "PUT", body: JSON.stringify(ticket) });
+            alert("Codsigaaga si habsan ayaa loo keydiyay, Maamulka ayaa dib u eegi doona!");
+        }
+
+        async function codsoKuBiiris() {
+            let groupId = prompt("Geli ID-ga Kooxda aad rabto inaad ku biirto:");
+            if(!groupId) return;
+            if(!dhammaanKooxahaXogtooda[groupId]) { alert("Kooxdaan ma jirto!"); return; }
+
+            let magac = prompt("Geli Magacaaga Saddexan:");
+            if(!magac) return;
+            let pin = prompt("Abuur PIN gaar ah (4 god):");
+            if(!pin || pin.length < 4) { alert("PIN-ku waa inuu 4 god yahay!"); return; }
+
+            let codsi = { groupId: groupId, magac: magac, pin: pin, xaaladda: "pending_join" };
+            await fetch(`${FIREBASE_URL}/ku_biirista/${groupId}_${Date.now()}.json`, { method: "PUT", body: JSON.stringify(codsi) });
+            alert("Codsigaaga ku biirista waa la diray! Master Admin-ka ayaa ansixin doona.");
         }
 
         async function sooJiidKooxaha() {
             let container = document.getElementById("kooxahaContainer");
-            let compSelect = document.getElementById("compGroupSelect");
             let loginGroupSelect = document.getElementById("loginGroupSelect");
-            let resetGroupSelect = document.getElementById("resetPinGroupSelect");
             try {
                 let res = await fetch(`${FIREBASE_URL}/kooxaha.json`);
                 let data = await res.json();
                 
                 if(!data || Object.keys(data).length === 0) { 
                     container.innerHTML = "<p style='color:#777; text-align:center;'>Weli ma jirto koox ku jirta Cloud-ka.</p>"; 
+                    dhammaanKooxahaXogtooda = {};
                     return; 
                 }
 
                 dhammaanKooxahaXogtooda = data;
-
                 let finalHTML = "";
-                let selectHTML = `<option value="">-- Dooro Kooxda --</option>`;
                 let loginSelectHTML = `<option value="">-- Dooro Kooxdaada --</option>`;
-                let resetSelectHTML = `<option value="">-- Dooro Kooxda --</option>`;
 
                 Object.keys(data).forEach(key => {
                     let koox = data[key];
                     if(!koox) return;
                     
-                    selectHTML += `<option value="${koox.id}">${koox.magaca}</option>`;
                     loginSelectHTML += `<option value="${koox.id}">${koox.magaca}</option>`;
-                    resetSelectHTML += `<option value="${koox.id}">${koox.magaca}</option>`;
-
                     let wadarBixiyay = 0;
                     let xubnahaHTML = "";
                     
@@ -625,20 +457,20 @@
                         koox.xubnaha.forEach((xubin) => {
                             let bixiyayHadda = xubin.bixiyayLacag || 0;
                             wadarBixiyay += bixiyayHadda;
-                            let isWinner = (xubin.id === parseInt(koox.wareeggaHadda)) ? "<span class='winner-badge'>🎯 Nasiibku waa</span>" : "";
+                            let isWinner = (xubin.id === parseInt(koox.wareeggaHadda)) ? "<span class='badge' style='background:#ff9f0a;'>🎯 Nasiibku waa</span>" : "";
                             
                             let statusLabel = "";
                             if (xubin.xaaladda === "paid") {
-                                statusLabel = `<span class="status-badge status-paid">Bixiyay ✅</span>`;
+                                statusLabel = `<span style="color:var(--success);">Bixiyay ✅ (${bixiyayHadda} ETB)</span>`;
                             } else if (xubin.xaaladda === "pending") {
-                                statusLabel = `<span class="status-badge status-pending">Sugaya Ansixin ⏳</span>`;
+                                statusLabel = `<span style="color:var(--warning);">Sugaya Ansixin ⏳ (${bixiyayHadda} ETB)</span>`;
                             } else {
-                                statusLabel = `<span class="status-badge status-unpaid">Ma Bixin ❌</span>`;
+                                statusLabel = `<span style="color:var(--danger);">Ma Bixin ❌ (${bixiyayHadda}/${koox.lacag} ETB)</span>`;
                             }
 
-                            let payButton = (xubin.xaaladda === "unpaid")
-                                ? `<button class="pay-now-btn" onclick="codsoLacagBixiin('${koox.id}', ${xubin.id}, '${xubin.magac}', ${koox.lacag}, '${koox.account}', '${xubin.pin}')">Bixi Lacagta</button>`
-                                : `<button class="pay-now-btn" style="background-color:#444;" disabled>Xiriirsan</button>`;
+                            let payButton = (xubin.xaaladda !== "paid")
+                                ? `<button style="background:var(--primary); color:white; border:none; padding:4px 10px; width:auto; margin:0; border-radius:4px; cursor:pointer;" onclick="codsoLacagBixiin('${koox.id}', ${xubin.id}, '${xubin.magac}', ${koox.lacag}, ${bixiyayHadda}, '${koox.account}', '${xubin.pin}')">Bixi</button>`
+                                : `<button style="background-color:#444; color:#aaa; border:none; padding:4px 10px; width:auto; margin:0; border-radius:4px;" disabled>OK</button>`;
 
                             xubnahaHTML += `
                                 <div class="member-row">
@@ -650,324 +482,291 @@
                     }
 
                     let dhimanGuud = koox.guud - wadarBixiyay;
-
                     let logsHTML = "";
                     if(koox.taariikhda) {
                         Object.keys(koox.taariikhda).forEach(lKey => {
                             let log = koox.taariikhda[lKey];
-                            logsHTML += `<div class="history-item">📝 ${log}</div>`;
+                            logsHTML += `<div>📝 ${log}</div>`;
                         });
                     } else { logsHTML = "<div style='color:#666;'>Weli ma jiro taariikh maaliyadeed bishan.</div>"; }
 
-                    let optionsHTML = "";
-                    if(koox.xubnaha) {
-                        koox.xubnaha.forEach((xubin, index) => { 
-                            optionsHTML += `<option value="${index}" ${index === parseInt(koox.wareeggaHadda) ? 'selected' : ''}>${xubin.magac}</option>`; 
-                        });
-                    }
-
                     finalHTML += `
                         <div class="group-card">
-                            <div class="group-header">
-                                <div>
-                                    <h5 style="margin:0; text-align:left;">${koox.magaca} (${koox.id})</h5>
-                                    <div style="font-size:11px; color:#aaa; text-align:left;">Masuul: <b>${koox.admin}</b> | 💳 Akoonka: <span style="color:#ff9f0a; font-weight:bold;">${koox.account}</span></div>
-                                </div>
-                                <button class="delete-btn" onclick="tirtirKoox('${koox.id}', '${koox.password}')">Tirtir 🗑️</button>
-                            </div>
-                            
-                            <div class="finance-grid">
-                                <div class="finance-card">
-                                    <div>Khasnada Hadda</div>
-                                    <b>${wadarBixiyay} ETB</b>
-                                </div>
-                                <div class="finance-card debt">
-                                    <div>Ka Maqan</div>
-                                    <b>${dhimanGuud} ETB</b>
-                                </div>
-                            </div>
-
-                            <p style="margin:5px 0; font-size:13px;">💰 Bishii qofki: <b>${koox.lacag} ETB</b> | Guud: <b>${koox.guud} ETB</b></p>
-                            
-                            <div style="margin: 10px 0;">
-                                <label style="font-size:12px; color:#aaa;">U beddel Nasiibka (Admin PIN):</label>
-                                <select class="cycle-select" onchange="beddelWareeg('${koox.id}', this.value, '${koox.password}')">${optionsHTML}</select>
-                            </div>
-
-                            <div style="margin-top: 10px;"><b style="font-size: 13px; color: #ff9f0a;">Liiska Xubnaha:</b>${xubnahaHTML}</div>
-                            
-                            <div style="margin-top:15px;">
-                                <b style="font-size:12px; color:#1e90ff;">Taariikhda Bixinta (Logs):</b>
-                                <div class="history-box">${logsHTML}</div>
-                            </div>
-
-                            <button class="reset-cycle-btn" onclick="xirWareeggaCusub('${koox.id}', ${koox.wareeggaHadda}, ${koox.xubnaha ? koox.xubnaha.length : 0}, '${koox.password}')">🔄 Xir Wareegga & U wareeji Nasiibka</button>
+                            <h4 style="margin-top:0; color:#ff9f0a; display:flex; justify-content:space-between;"><span>${koox.magaca}</span> <span style="font-size:12px; color:#aaa;">ID: ${koox.id}</span></h4>
+                            <p style="font-size:12px; color:#aaa; margin:2px 0;">Gudoomiye: <b>${koox.admin}</b> | 💳 Akoonka: <span style="color:var(--primary); font-weight:bold;">${koox.account}</span></p>
+                            <p style="font-size:13px; margin:5px 0;">Khasnada Hadda: <b style="color:var(--success);">${wadarBixiyay} ETB</b> | Ka Maqan: <b style="color:var(--danger);">${dhimanGuud} ETB</b></p>
+                            <p style="font-size:13px; margin:5px 0;">Bishii qofki: <b>${koox.lacag} ETB</b> | Guud ahaan wareegga: <b>${koox.guud} ETB</b></p>
+                            <div style="margin:10px 0;">${xubnahaHTML}</div>
+                            <div style="font-size:12px; color:var(--primary); margin-top:10px;"><b>Diiwaanka Guusha & Lacagaha:</b></div>
+                            <div class="history-box">${logsHTML}</div>
                         </div>
                     `;
                 });
                 
                 container.innerHTML = finalHTML;
-                
-                if (compSelect.innerHTML !== selectHTML) compSelect.innerHTML = selectHTML;
                 if (loginGroupSelect.innerHTML !== loginSelectHTML) loginGroupSelect.innerHTML = loginSelectHTML;
-                if (resetGroupSelect.innerHTML !== resetSelectHTML) resetGroupSelect.innerHTML = resetSelectHTML;
             } catch (err) { console.log(err); }
         }
 
-        function buuxiXubnahaCabashada(groupId) {
-            let mSelect = document.getElementById("compMemberSelect");
-            mSelect.innerHTML = `<option value="">-- Dooro Magacaaga --</option>`;
-            if(!groupId || !dhammaanKooxahaXogtooda[groupId]) return;
-            let xubnaha = dhammaanKooxahaXogtooda[groupId].xubnaha;
-            if(xubnaha) { xubnaha.forEach(x => { mSelect.innerHTML += `<option value="${x.id}">${x.magac}</option>`; }); }
-        }
+        async function codsoLacagBixiin(groupId, memberId, magaca, lacagtaGuud, bixiyayHadda, account, saxPin) {
+            let gashayPin = prompt("Geli PIN-kaaga gaarka ah (4 God):");
+            if (gashayPin !== saxPin) { alert("PIN-kaagu waa khaldan yahay!"); return; }
 
-        function buuxiXubnahaReset(groupId) {
-            let rSelect = document.getElementById("resetPinMemberSelect");
-            rSelect.innerHTML = `<option value="">-- Dooro Xubin --</option>`;
-            if(!groupId || !dhammaanKooxahaXogtooda[groupId]) return;
-            let xubnaha = dhammaanKooxahaXogtooda[groupId].xubnaha;
-            if(xubnaha) { xubnaha.forEach(x => { rSelect.innerHTML += `<option value="${x.id}">${x.magac}</option>`; }); }
-        }
+            let dhiman = lacagtaGuud - bixiyayHadda;
+            let bixiRaba = parseFloat(prompt(`Lacagta bishaan: ${lacagtaGuud} ETB\nHore waxaad u bixisay: ${bixiyayHadda} ETB\nHadda waxaa kugu dhiman: ${dhiman} ETB\n\nGeli cadadka aad hadda bixinayso:`));
+            
+            if(isNaN(bixiRaba) || bixiRaba <= 0 || bixiRaba > dhiman) { 
+                alert("Cadadka aad gelisay ma saxna!"); 
+                return; 
+            }
 
-        async function codsoLacagBixiin(groupId, memberId, magaca, lacagta, account, saxPin) {
-            let gashayPin = prompt("Geli PIN-kaaga gaarka ah (Xubin PIN) si aad u xaqiijiso naftaada:");
-            if (gashayPin !== saxPin) { alert("PIN-kaagu waa khaldan yahay! Codsiga lama aqbalin."); return; }
-
-            let shirkad = prompt(`Akoonka lacagta lagu shubayo waa:\n👉 ${account}\n\nGeli shirkadda aad lacagta u soo martay (CBE Birr / E-Birr):`);
+            let shirkad = prompt(`Akoonka: ${account}\n\nGeli Shirkadda (CBE Birr / E-Birr / Zaad):`);
             if (!shirkad) return;
 
-            let refNo = prompt("Geli Nambarka Xaqiijinta (Reference Number / Txn ID):");
-            if(!refNo) { alert("Waa qasab inaad geliso Ref Number!"); return; }
+            let refNo = prompt("Geli Nambarka Xaqiijinta (Ref Number / Txn ID):");
+            if(!refNo) return;
 
-            let codsi = { groupId: groupId, memberId: memberId, magaca: magaca, lacagta: lacagta, shirkad: shirkad, refNo: refNo, waqtiga: new Date().toLocaleString() };
+            let codsi = { 
+                groupId: groupId, 
+                memberId: memberId, 
+                magaca: magaca, 
+                lacagta: bixiRaba, 
+                shirkad: shirkad, 
+                refNo: refNo, 
+                xaaladda: "pending" 
+            };
             
             await fetch(`${FIREBASE_URL}/codsiyada/${groupId}_${memberId}.json`, { method: "PUT", body: JSON.stringify(codsi) });
             await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/xaaladda.json`, { method: "PUT", body: JSON.stringify("pending") });
             
-            alert("Guul! Codsigii lacag bixintaada waa la diray. Masuulka kooxdaada ama Maamulaha Guud ayaa ka ansixin doona Dashboard-ka.");
+            alert("Codsigaaga qayb-bixinta waa la diray, gudoomiyaha ayaa ansixin doona!");
             sooJiidKooxaha();
         }
 
-        // COMPLAINTS
-        async function gudbiCabasho() {
-            let groupId = document.getElementById("compGroupSelect").value;
-            let mId = document.getElementById("compMemberSelect").value;
-            let gashayPin = document.getElementById("compMemberPin").value;
-            let farriin = document.getElementById("compMessage").value.trim();
+        async function xaqiijiMaamulka() {
+            let pin = document.getElementById("adminPinInput").value.trim();
+            let selectedGroup = document.getElementById("loginGroupSelect").value;
 
-            if(groupId === "" || mId === "" || gashayPin === "" || farriin === "") { alert("Fadlan buuxi dhammaan sanduuqyada cabashada!"); return; }
-
-            let xubin = dhammaanKooxahaXogtooda[groupId].xubnaha[mId];
-            if(xubin.pin !== gashayPin) { alert("PIN-ka xubinta waa khaldan yahay!"); return; }
-
-            let cId = "comp_" + Date.now();
-            let data = { magac: xubin.magac, koox: groupId, farriin: farriin };
-
-            await fetch(`${FIREBASE_URL}/cabashooyinka/${cId}.json`, { method: "PUT", body: JSON.stringify(data) });
-            
-            document.getElementById("compMemberPin").value = "";
-            document.getElementById("compMessage").value = "";
-            alert("Cabashadaada si ammaan ah ayaa loo gaarsiiyey Maamulaha Guud!");
-        }
-
-        // MIXED SECURITY AUTHENTICATION
-        function xaqiijiMaamulka() {
-            let gId = document.getElementById("loginGroupSelect").value;
-            let gashayPin = document.getElementById("adminPinInput").value;
-
-            if(gashayPin === MASTER_PIN) {
-                // He is Super Admin / Master
+            if (pin === MASTER_PIN) {
                 authedRole = 'master';
-                authedGroupId = null;
-                document.getElementById("adminWelcomeTitle").innerText = "👑 Kusoo dhowaw: Maamulaha Guud (Master Access)";
+                document.getElementById("adminWelcomeTitle").innerText = "Maamulaha Guud (Master Admin)";
                 document.getElementById("superAdminOnlySection").style.display = "block";
-                 hibeeyDashboard();
-            } else {
-                // Check if he is Group Admin
-                if(gId === "") { alert("Fadlan dooro kooxdaada haddii aad tahay Group Admin, ama gali Master PIN-ka!"); return; }
-                let kooxdaXogteeda = dhammaanKooxahaXogtooda[gId];
-                
-                if(kooxdaXogteeda && kooxdaXogteeda.password === gashayPin) {
-                    authedRole = 'group_admin';
-                    authedGroupId = gId;
-                    authedGroupPin = gashayPin;
-                    document.getElementById("adminWelcomeTitle").innerText = `💼 Admin Kooxda: ${kooxdaXogteeda.magaca}`;
-                    document.getElementById("superAdminOnlySection").style.display = "none"; 
-                    hibeeyDashboard();
-                } else {
-                    alert("PIN-ka ama Kooxda aad dooratay waa khaldan tahay!");
-                }
-            }
-        }
-
-        function hibeeyDashboard() {
-            document.getElementById("adminAuthBox").style.display = "none";
-            document.getElementById("adminDashboardContent").style.display = "block";
-            loadAdminDashboardData();
+                document.getElementById("generalTicketsSection").style.display = "block";
+                document.getElementById("adminAuthBox").style.display = "none";
+                document.getElementById("adminDashboardContent").style.display = "block";
+                document.getElementById("groupManageSelectorArea").style.display = "block"; 
+                loadAdminDashboardData();
+            } else if (selectedGroup && dhammaanKooxahaXogtooda[selectedGroup] && pin === dhammaanKooxahaXogtooda[selectedGroup].password) {
+                authedRole = 'group_admin';
+                authedGroupId = selectedGroup;
+                document.getElementById("adminWelcomeTitle").innerText = `Maamulaha Kooxda: ${dhammaanKooxahaXogtooda[selectedGroup].magaca}`;
+                document.getElementById("superAdminOnlySection").style.display = "none";
+                document.getElementById("generalTicketsSection").style.display = "none"; // Admin kooxuhu ma arki karaan tikidada guud
+                document.getElementById("adminAuthBox").style.display = "none";
+                document.getElementById("adminDashboardContent").style.display = "block";
+                document.getElementById("groupManageSelectorArea").style.display = "none"; 
+                buuxiXogtaHagaajinta(authedGroupId); 
+                loadAdminDashboardData();
+            } else { alert("PIN-ka ama Kooxda aad dooratay waa khaldan tahay!"); }
         }
 
         function kabaxDashboard() {
             authedRole = null;
             authedGroupId = null;
-            authedGroupPin = null;
             document.getElementById("adminPinInput").value = "";
             document.getElementById("adminAuthBox").style.display = "block";
             document.getElementById("adminDashboardContent").style.display = "none";
+            document.getElementById("adminWelcomeTitle").innerText = "Admin Authorization";
         }
 
-        async function loadAdminDashboardData() {
-            if(authedRole === null) return;
-            
-            // 1. Load Pending Payments
-            let pendingContainer = document.getElementById("pendingPaymentsContainer");
-            let res = await fetch(`${FIREBASE_URL}/codsiyada.json`);
-            let codsiyada = await res.json();
+        function buuxiXogtaHagaajinta(gId) {
+            if(!gId || !dhammaanKooxahaXogtooda[gId]) return;
+            let k = dhammaanKooxahaXogtooda[gId];
+            document.getElementById("editGroupName").value = k.magaca;
+            document.getElementById("editGroupMoney").value = k.lacag;
+            document.getElementById("editGroupAccount").value = k.account;
+        }
 
-            if(!codsiyada || Object.keys(codsiyada).length === 0) {
-                pendingContainer.innerHTML = "<p style='color:#aaa;'>Ma jiraan codsiyo lacag-bixineed oo sugaya xaqiijin.</p>";
-            } else {
-                let html = "";
-                Object.keys(codsiyada).forEach(key => {
-                    let c = codsiyada[key];
-                    
-                    // FILTRATION: Haddii uu yahay group admin, kaliya tus kooxdiisa. Haddii uu yahay Master, tus dhammaan!
-                    if(authedRole === 'group_admin' && c.groupId !== authedGroupId) {
-                        return; // Skip this item
-                    }
+        async function keydiIsbeddelkaKooxda() {
+            let gId = (authedRole === 'master') ? document.getElementById("manageGroupSelect").value : authedGroupId;
+            if(!gId) { alert("Fadlan dooro koox marka hore!"); return; }
 
-                    html += `
-                        <div style="background:#2d2d2d; padding:10px; border-radius:6px; margin-bottom:10px; font-size:13px;">
-                            <p style="margin:3px 0;">Qofka: <b>${c.magaca}</b> | Kooxda: <b>${c.groupId}</b></p>
-                            <p style="margin:3px 0; color:#ff9f0a;">Lacagta: <b>${c.lacagta} ETB</b> via ${c.shirkad}</p>
-                            <p style="margin:3px 0; color:#aaa;">Ref No: ${c.refNo} | Saacadda: ${c.waqtiga}</p>
-                            <div style="margin-top:8px; display:flex; gap:10px;">
-                                <button class="pay-now-btn" style="background:#10b981;" onclick="ansixiLacag('${c.groupId}', ${c.memberId}, ${c.lacagta}, '${c.magaca}', '${c.shirkad}', '${key}')">✅ Ansixi</button>
-                                <button class="pay-now-btn" style="background:#ef4444;" onclick="diidLacag('${c.groupId}', ${c.memberId}, '${key}')">❌ Diid</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                if(html === "") html = "<p style='color:#aaa;'>Ma jiraan codsiyo kooxdaada ah oo sugaya xaqiijin.</p>";
-                pendingContainer.innerHTML = html;
+            let magacaCusub = document.getElementById("editGroupName").value.trim();
+            let lacagCusub = parseFloat(document.getElementById("editGroupMoney").value);
+            let accountCusub = document.getElementById("editGroupAccount").value.trim();
+
+            if(magacaCusub === "" || isNaN(lacagCusub) || accountCusub === "") {
+                alert("Fadlan buuxi dhammaan meelaha bannaan!");
+                return;
             }
 
-            // 2. Load Master Only Data (Complaints)
-            if(authedRole === 'master') {
-                let compContainer = document.getElementById("adminComplaintsContainer");
-                let cRes = await fetch(`${FIREBASE_URL}/cabashooyinka.json`);
-                let cabashooyinka = await cRes.json();
+            let meqoxubnood = dhammaanKooxahaXogtooda[gId].xubnaha ? dhammaanKooxahaXogtooda[gId].xubnaha.length : 0;
+            let guudCusub = lacagCusub * meqoxubnood;
 
-                if(!cabashooyinka || Object.keys(cabashooyinka).length === 0) {
-                    compContainer.innerHTML = "<p style='color:#aaa;'>Sanduuqa cabashada waa maran yahay.</p>";
-                } else {
-                    let cHtml = "";
-                    Object.keys(cabashooyinka).forEach(key => {
-                        let cb = cabashooyinka[key];
-                        cHtml += `
-                            <div style="background:#1a1a1a; padding:10px; border-radius:6px; margin-bottom:10px; font-size:13px; border-left:3px solid #ef4444;">
-                                <p style="margin:2px 0;"><b>Xubin:</b> ${cb.magac} | <b>Kooxda:</b> ${cb.koox}</p>
-                                <p style="margin:5px 0; color:#ddd; font-style:italic;">"${cb.farriin}"</p>
-                                <button class="delete-btn" style="padding:2px 6px; font-size:11px;" onclick="tirtirCabasho('${key}')">Tirtir 🗑️</button>
+            await fetch(`${FIREBASE_URL}/kooxaha/${gId}/magaca.json`, { method: "PUT", body: JSON.stringify(magacaCusub) });
+            await fetch(`${FIREBASE_URL}/kooxaha/${gId}/lacag.json`, { method: "PUT", body: JSON.stringify(lacagCusub) });
+            await fetch(`${FIREBASE_URL}/kooxaha/${gId}/account.json`, { method: "PUT", body: JSON.stringify(accountCusub) });
+            await fetch(`${FIREBASE_URL}/kooxaha/${gId}/guud.json`, { method: "PUT", body: JSON.stringify(guudCusub) });
+
+            alert("Isbeddelka waa la keydiyay!");
+            sooJiidKooxaha();
+        }
+
+        async function tirtirKooxdaRasmigaAh() {
+            let gId = (authedRole === 'master') ? document.getElementById("manageGroupSelect").value : authedGroupId;
+            if(!gId) { alert("Fadlan dooro koox marka hore!"); return; }
+            let xaqiiji = confirm("Ma hubtaa inaad tirtirto kooxdan?");
+            if(!xaqiiji) return;
+            await fetch(`${FIREBASE_URL}/kooxaha/${gId}.json`, { method: "DELETE" });
+            alert("Kooxda waa la tirtiray!");
+            kabaxDashboard();
+            sooJiidKooxaha();
+        }
+
+        // --- FETCH AND DISPLAY DATA SEQUENTIALLY (NO HOPPING/FLASHING) ---
+        async function loadAdminDashboardData() {
+            if (authedRole === null) return;
+            
+            // 1. ANXISINTA LACAGAHA (Master views ALL, Admin views only THEIR group)
+            let pendingContainer = document.getElementById("pendingPaymentsContainer");
+            try {
+                let res = await fetch(`${FIREBASE_URL}/codsiyada.json`);
+                let data = await res.json();
+                let htmlContent = "";
+                
+                if (data && Object.keys(data).length > 0) {
+                    Object.keys(data).forEach(key => {
+                        let c = data[key];
+                        if (authedRole === 'group_admin' && c.groupId !== authedGroupId) return;
+
+                        htmlContent += `
+                            <div class="member-row" style="background: #334155;">
+                                <div>Kooxda: <b>${c.groupId}</b> | Xubin: <b>${c.magaca}</b><br>Lacag: ${c.lacagta} ETB (Ref: ${c.refNo})</div>
+                                <div style="display:flex; gap:5px;">
+                                    <button style="background:var(--success); border:none; padding:6px; width:auto; cursor:pointer;" onclick="ansixiLacag('${c.groupId}', ${c.memberId}, '${c.magaca}', ${c.lacagta}, '${key}')">Ansixi ✅</button>
+                                    <button style="background:var(--danger); border:none; padding:6px; width:auto; cursor:pointer;" onclick="diidLacag('${c.groupId}', ${c.memberId}, '${key}')">Diid ❌</button>
+                                </div>
                             </div>
                         `;
                     });
-                    compContainer.innerHTML = cHtml;
+                }
+                pendingContainer.innerHTML = htmlContent || "<p style='color:#aaa;'>Ma jiraan codsiyo lacag bixin oo sugaya ansixin.</p>";
+            } catch (err) { console.log(err); }
+
+            // 2. LIISKA CODSIYADA GUUD (Master Admin Only sees this sequentially)
+            if(authedRole === 'master') {
+                let ticketsContainer = document.getElementById("generalTicketsContainer");
+                try {
+                    let res = await fetch(`${FIREBASE_URL}/tikidhada.json`);
+                    let tData = await res.json();
+                    let tHTML = "";
+                    
+                    if(tData && Object.keys(tData).length > 0) {
+                        Object.keys(tData).forEach(key => {
+                            let t = tData[key];
+                            tHTML += `
+                                <div class="member-row" style="background:#2d3748; border-left: 4px solid var(--warning);">
+                                    <div>
+                                        <span class="badge" style="background:var(--warning);">${t.nooca}</span>
+                                        <strong>Kooxda:</strong> ${t.groupId} | <strong>Qofka:</strong> ${t.magac}<br>
+                                        <p style="margin:5px 0; color:#cbd5e1;">"${t.fariin}"</p>
+                                        <small style="color:#94a3b8;">${t.waqti}</small>
+                                    </div>
+                                    <button style="background:var(--danger); border:none; padding:4px 8px; width:auto; cursor:pointer;" onclick="tirtirTikidh('${key}')">Xir 🗑️</button>
+                                </div>
+                            `;
+                        });
+                    }
+                    ticketsContainer.innerHTML = tHTML || "<p style='color:#aaa;'>Ma jiraan cabashooyin ama codsiyo PIN oo furan.</p>";
+                } catch(e) { console.log(e); }
+
+                // 3. KU BIIRISTA KOOXAHA
+                let joinContainer = document.getElementById("joinRequestsContainer");
+                try {
+                    let res = await fetch(`${FIREBASE_URL}/ku_biirista.json`);
+                    let jData = await res.json();
+                    let jHTML = "";
+                    if(jData && Object.keys(jData).length > 0) {
+                        Object.keys(jData).forEach(key => {
+                            let j = jData[key];
+                            jHTML += `
+                                <div class="member-row" style="background: #1e293b;">
+                                    <div>Kooxda: <b>${j.groupId}</b> | Magaca: <b>${j.magac}</b></div>
+                                    <button style="background:var(--primary); border:none; padding:6px; width:auto; cursor:pointer;" onclick="ansixiKuBiiris('${j.groupId}', '${j.magac}', '${j.pin}', '${key}')">Oggolaaw 👤</button>
+                                </div>
+                            `;
+                        });
+                    }
+                    joinContainer.innerHTML = jHTML || "<p style='color:#aaa;'>Ma jiraan codsiyo ku biiris ah.</p>";
+                } catch(e) { console.log(e); }
+
+                // Update group selectors for master
+                let manageSelect = document.getElementById("manageGroupSelect");
+                let currentVal = manageSelect.value;
+                let optHTML = `<option value="">-- Dooro Koox --</option>`;
+                Object.keys(dhammaanKooxahaXogtooda).forEach(k => {
+                    optHTML += `<option value="${k}">${dhammaanKooxahaXogtooda[k].magaca}</option>`;
+                });
+                if(manageSelect.innerHTML !== optHTML) {
+                    manageSelect.innerHTML = optHTML;
+                    manageSelect.value = currentVal;
                 }
             }
         }
 
-        async function ansixiLacag(groupId, memberId, lacagta, magaca, shirkad, key) {
-            let gashayPin = prompt("Geli PIN-kaaga Maamulnimo si aad u ansixiso:");
-            
-            // Xaqiiji in PIN-ku sax yahay (ha ahaado Group Admin-kii kooxdaas ama Master PIN)
-            if(authedRole === 'group_admin' && gashayPin !== authedGroupPin) { alert("PIN-ka Admin-ka kooxdu waa khaldan yahay!"); return; }
-            if(authedRole === 'master' && gashayPin !== MASTER_PIN) { alert("Master PIN Khaldan!"); return; }
-
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/bixiyayLacag.json`, { method: "PUT", body: lacagta });
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/xaaladda.json`, { method: "PUT", body: JSON.stringify("paid") });
-
-            let logMsg = `${magaca} wuxuu bixiyay ${lacagta} ETB via ${shirkad} (${new Date().toLocaleDateString()})`;
-            let logId = "log_" + Date.now();
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/taariikhda/${logId}.json`, { method: "PUT", body: JSON.stringify(logMsg) });
-
-            await fetch(`${FIREBASE_URL}/codsiyada/${key}.json`, { method: "DELETE" });
-            
-            alert("Lacagta si guul leh ayaa loo ansixiyey!");
-            loadAdminDashboardData();
-            sooJiidKooxaha();
-        }
-
-        async function diidLacag(groupId, memberId, key) {
-            let gashayPin = prompt("Geli PIN-kaaga Maamulnimo:");
-            if(authedRole === 'group_admin' && gashayPin !== authedGroupPin) { alert("PIN Khaldan!"); return; }
-            if(authedRole === 'master' && gashayPin !== MASTER_PIN) { alert("Master PIN Khaldan!"); return; }
-
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/xaaladda.json`, { method: "PUT", body: JSON.stringify("unpaid") });
-            await fetch(`${FIREBASE_URL}/codsiyada/${key}.json`, { method: "DELETE" });
-            
-            alert("Codsigii waa la diiday!");
-            loadAdminDashboardData();
-            sooJiidKooxaha();
-        }
-
-        // MASTER ONLY: RESET MEMBER PIN
-        async function baabiiXubinPin() {
-            if(authedRole !== 'master') return;
-            let groupId = document.getElementById("resetPinGroupSelect").value;
-            let mId = document.getElementById("resetPinMemberSelect").value;
-
-            if(groupId === "" || mId === "") { alert("Fadlan dooro Kooxda iyo Xubinta!"); return; }
-
-            let nuyihiinPin = prompt("Geli PIN-ka cusub ee 4-ta god ah ee loo samaynayo xubintaan:");
-            if(!nuyihiinPin || nuyihiinPin.length < 4) { alert("PIN-ka cusub waa inuu noqdaa 4 god!"); return; }
-
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${mId}/pin.json`, { method: "PUT", body: JSON.stringify(nuyihiinPin) });
-            alert("Guul! PIN-kii hore ee xubinta waa la baabi'iyey, mid cusubna waa loo sameeyey!");
-            sooJiidKooxaha();
-        }
-
-        async function tirtirCabasho(key) {
-            if(authedRole !== 'master') return;
-            await fetch(`${FIREBASE_URL}/cabashooyinka/${key}.json`, { method: "DELETE" });
+        async function tirtirTikidh(key) {
+            await fetch(`${FIREBASE_URL}/tikidhada/${key}.json`, { method: "DELETE" });
             loadAdminDashboardData();
         }
 
-        // OTHER GROUP FUNCTIONS
-        async function beddelWareeg(groupId, winnerIndex, sirtiiKooxda) {
-            let kalasooGeli = prompt("Geli PIN-ka Admin-ka Kooxda:");
-            if (kalasooGeli !== sirtiiKooxda) { alert("PIN-ka Admin-ku waa khaldan yahay!"); sooJiidKooxaha(); return; }
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/wareeggaHadda.json`, { method: "PUT", body: winnerIndex });
-            alert("Qofka nasiibka leh waa la beddelay.");
-            sooJiidKooxaha();
-        }
+        async function ansixiLacag(groupId, memberId, magaca, lacagtaCusub, reqKey) {
+            let kooxRes = await fetch(`${FIREBASE_URL}/kooxaha/${groupId}.json`);
+            let koox = await kooxRes.json();
+            let xubin = koox.xubnaha[memberId];
+            let wadarBixiyayHadda = (xubin.bixiyayLacag || 0) + lacagtaCusub;
 
-        async function xirWareeggaCusub(groupId, wareeggaHadda, tiradaXubnaha, sirtiiKooxda) {
-            let kalasooGeli = prompt("Geli PIN-ka Admin-ka kooxda:");
-            if (kalasooGeli !== sirtiiKooxda) { alert("PIN-ka Admin-ku waa khaldan yahay!"); return; }
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/bixiyayLacag.json`, { method: "PUT", body: JSON.stringify(wadarBixiyayHadda) });
 
-            let xigaIndex = (parseInt(wareeggaHadda) + 1) % tiradaXubnaha;
-            let res = await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha.json`);
-            let xubnaha = await res.json();
-            
-            xubnaha.forEach(xubin => { xubin.bixiyayLacag = 0; xubin.xaaladda = "unpaid"; });
-
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha.json`, { method: "PUT", body: JSON.stringify(xubnaha) });
-            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/wareeggaHadda.json`, { method: "PUT", body: xigaIndex });
-
-            alert("Wareeggii bisha waa la xiray! Wareeggii xigana wuu furmay.");
-            sooJiidKooxaha();
-        }
-
-        async function tirtirKoox(groupId, sirtiiKooxda) {
-            let kalasooGeli = prompt("Geli PIN-ka Admin-ka kooxda:");
-            if (kalasooGeli !== sirtiiKooxda) { alert("PIN-ka Admin-ku waa khaldan yahay!"); return; }
-
-            if (confirm("Ma hubaal baa inaad tirtirto kooxdan?")) {
-                await fetch(`${FIREBASE_URL}/kooxaha/${groupId}.json`, { method: "DELETE" });
-                alert("Kooxdii waa la tirtiray.");
-                sooJiidKooxaha();
+            if(wadarBixiyayHadda >= koox.lacag) {
+                await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/xaaladda.json`, { method: "PUT", body: JSON.stringify("paid") });
+            } else {
+                await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/xaaladda.json`, { method: "PUT", body: JSON.stringify("unpaid") });
             }
+            
+            let logMsg = `${magaca} wuxuu bixiyay (${lacagtaCusub} ETB).`;
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/taariikhda.json`, { method: "POST", body: JSON.stringify(logMsg) });
+            await fetch(`${FIREBASE_URL}/codsiyada/${reqKey}.json`, { method: "DELETE" });
+
+            alert("Lacagta waa la ansixiyay!");
+            loadAdminDashboardData();
+            sooJiidKooxaha();
+        }
+
+        async function diidLacag(groupId, memberId, reqKey) {
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha/${memberId}/xaaladda.json`, { method: "PUT", body: JSON.stringify("unpaid") });
+            await fetch(`${FIREBASE_URL}/codsiyada/${reqKey}.json`, { method: "DELETE" });
+            alert("Codsigii lacagta waa la diiday.");
+            loadAdminDashboardData();
+            sooJiidKooxaha();
+        }
+
+        async function ansixiKuBiiris(groupId, magac, pin, reqKey) {
+            let kooxRes = await fetch(`${FIREBASE_URL}/kooxaha/${groupId}.json`);
+            let koox = await kooxRes.json();
+            if(!koox.xubnaha) koox.xubnaha = [];
+            let nambarkaCusubId = koox.xubnaha.length;
+
+            let xubinCusub = { id: nambarkaCusubId, magac: magac, pin: pin, bixiyayLacag: 0, xaaladda: "unpaid" };
+            koox.xubnaha.push(xubinCusub);
+            let guudCusub = koox.lacag * koox.xubnaha.length;
+
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/xubnaha.json`, { method: "PUT", body: JSON.stringify(koox.xubnaha) });
+            await fetch(`${FIREBASE_URL}/kooxaha/${groupId}/guud.json`, { method: "PUT", body: JSON.stringify(guudCusub) });
+            await fetch(`${FIREBASE_URL}/ku_biirista/${reqKey}.json`, { method: "DELETE" });
+
+            alert(`Guul! ${magac} waa la oggolaaday.`);
+            loadAdminDashboardData();
+            sooJiidKooxaha();
         }
     </script>
 </body>
